@@ -4,7 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/binary"
 	"fmt"
-	"os"
+	"github.com/tetratelabs/wazero/api"
 
 	"github.com/leighmcculloch/sjc/val"
 	"github.com/stellar/go/keypair"
@@ -70,9 +70,9 @@ func (o *Objects) GetMap(v val.Val) map[val.Val]val.Val {
 
 func (h *Host) funcs() map[string]any {
 	return map[string]any{
-		"abort": func(message uint32, file uint32, line uint32, col uint32) {
+		"abort": func(m api.Module, message uint32, file uint32, line uint32, col uint32) {
 			fmt.Printf("abort: message=%d file=%d line=%d col=%d\n", message, file, line, col)
-			os.Exit(1)
+			_ = m.CloseWithExitCode(255)
 		},
 
 		"log_value": func(v val.Val) val.Val {

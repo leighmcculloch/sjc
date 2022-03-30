@@ -3,10 +3,9 @@ module github.com/leighmcculloch/sjc
 go 1.18
 
 require (
-	github.com/davecgh/go-spew v1.1.1
 	github.com/spf13/cobra v1.4.0
 	github.com/stellar/go v0.0.0-20220328160910-463d2b923a50
-	github.com/tetratelabs/wazero v0.0.0-20220328001702-50713cfefb71
+	github.com/tetratelabs/wazero v0.0.0-20220401224236-2664b1eb62a2
 )
 
 require (

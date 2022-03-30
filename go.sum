@@ -1,6 +1,5 @@
 github.com/cpuguy83/go-md2man/v2 v2.0.1/go.mod h1:tgQtvFlXSQOSOSIRvRPT7W67SCa46tRHOmNcaadrF8o=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
-github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/hpcloud/tail v1.0.0 h1:nfCOvKYfkgYP8hkirhJocXT2+zOD8yUNjXaWfTlyFKI=
 github.com/inconshreveable/mousetrap v1.0.0 h1:Z8tu5sraLXCXIcARxBp/8cbvlwVa7Z1NHg9XEKhtSvM=
 github.com/inconshreveable/mousetrap v1.0.0/go.mod h1:PxqpIevigyE2G7u3NXJIT2ANytuPF1OarO4DADm73n8=
@@ -19,8 +18,8 @@ github.com/stellar/go v0.0.0-20220328160910-463d2b923a50/go.mod h1:XDw7zGAJCmEuZ
 github.com/stellar/go-xdr v0.0.0-20211103144802-8017fc4bdfee h1:fbVs0xmXpBvVS4GBeiRmAE3Le70ofAqFMch1GTiq/e8=
 github.com/stellar/go-xdr v0.0.0-20211103144802-8017fc4bdfee/go.mod h1:yoxyU/M8nl9LKeWIoBrbDPQ7Cy+4jxRcWcOayZ4BMps=
 github.com/stretchr/testify v1.7.0 h1:nwc3DEeHmmLAfoZucVR881uASk0Mfjw8xYJ99tb5CcY=
-github.com/tetratelabs/wazero v0.0.0-20220328001702-50713cfefb71 h1:ZjKh2kcKZAmhRATmVrW+4X6KzRRbCmfO+TOTEojh970=
-github.com/tetratelabs/wazero v0.0.0-20220328001702-50713cfefb71/go.mod h1:jF+njZWLD70K/xB02hWVz5aQ2m+RCfFjIUJi44t9zOo=
+github.com/tetratelabs/wazero v0.0.0-20220401224236-2664b1eb62a2 h1:T6qVU9nmdy2pQ82ml5iiv0cGNLCzAQ2VNG+U3bQEniQ=
+github.com/tetratelabs/wazero v0.0.0-20220401224236-2664b1eb62a2/go.mod h1:jF+njZWLD70K/xB02hWVz5aQ2m+RCfFjIUJi44t9zOo=
 github.com/twitchyliquid64/golang-asm v0.15.1 h1:SU5vSMR7hnwNxj24w34ZyCi/FmDZTkS4MhqMhdFk5YI=
 github.com/twitchyliquid64/golang-asm v0.15.1/go.mod h1:a1lVb/DtPvCB8fslRZhAngC2+aY1QWCk3Cedj/Gdt08=
 github.com/xdrpp/goxdr v0.1.1 h1:E1B2c6E8eYhOVyd7yEpOyopzTPirUeF6mVOfXfGyJyc=

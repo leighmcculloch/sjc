@@ -40,6 +40,7 @@ func (c *buildCmd) Run(cmd *cobra.Command, args []string) error {
 		c.ASCPath,               // Assume asc is installed and findable in the PATH.
 		"--runtime=stub",        // Keeps file size smaller, and we do not need full runtime.
 		"--disable=bulk-memory", // Unsupported in fizzy and many wasm runtimes, and is only an optimization.
+		"--disable=nontrapping-f2i", // Not yet supported in wazero.
 		"-Osize",                // Optimize for file size.
 		"-o="+outFile,           // Output file.
 		entryFile,

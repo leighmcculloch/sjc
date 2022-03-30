@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -48,22 +47,22 @@ func (c *runCmd) Run(cmd *cobra.Command, args []string) error {
 	funcArgsStrs := args[2:]
 
 	fmt.Fprintln(os.Stderr, "Wasm File:", file)
-	source, err := os.ReadFile(file)
+	wasm, err := os.ReadFile(file)
 	if err != nil {
 		return err
 	}
 
-	config := wazero.NewRuntimeConfigInterpreter()
+	config := wazero.NewRuntimeConfigInterpreter().
+		WithContext(cmd.Context()).
+		WithFeatureSignExtensionOps(true)
 	runtime := wazero.NewRuntimeWithConfig(config)
-	importObj, err := runtime.NewModuleBuilder("env").ExportFunctions(h.funcs()).Build()
+	env, err := runtime.NewModuleBuilder("env").ExportFunctions(h.funcs()).Instantiate()
 	if err != nil {
 		return err
 	}
-	_, err = runtime.InstantiateModule(importObj)
-	if err != nil {
-		return err
-	}
-	mod, err := runtime.InstantiateModuleFromSource(source)
+	defer env.Close()
+
+	mod, err := runtime.InstantiateModuleFromCode(wasm)
 	if err != nil {
 		return err
 	}
@@ -82,8 +81,7 @@ func (c *runCmd) Run(cmd *cobra.Command, args []string) error {
 	}
 	fmt.Fprintln(os.Stderr, "Params:", funcArgs)
 
-	ctx := context.Background()
-	result, err := mod.ExportedFunction(funcName).Call(mod.WithContext(ctx), funcArgsUint...)
+	result, err := mod.ExportedFunction(funcName).Call(nil, funcArgsUint...)
 	if err != nil {
 		return err
 	}
