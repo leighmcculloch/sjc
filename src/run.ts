@@ -69,7 +69,18 @@ export async function run(
       console.error("With Args (vals):", funcArgsVals);
     }
   }
-  const func = wasmInstance.exports[funcName] as CallableFunction;
+  const rawFunc = wasmInstance.exports[funcName];
+  if (rawFunc == undefined) {
+    const funcs = WebAssembly.Module.exports(wasmModule).filter((e) =>
+      e.kind == "function"
+    ).map((e) => e.name);
+    throw new Error(
+      `"${funcName}" is not the name of a function, did you mean: ${
+        funcs.join(", ")
+      }?`,
+    );
+  }
+  const func = rawFunc as CallableFunction;
   const retVal = func(...funcArgsVals);
   if (retVal === undefined) {
     if (opts.verbose) {
