@@ -61,7 +61,8 @@ cli
     let wasmFile = file;
     const fileExt = path.extname(file);
     if (fileExt == ".ts") {
-      const fileName = file.slice(0, file.length - fileExt.length);
+      const fullFileName = path.basename(file);
+      const fileName = fullFileName.slice(0, fullFileName.length - fileExt.length);
       const outFileName = `${fileName}.wasm`;
       const tempDir = await Deno.makeTempDir();
       wasmFile = path.join(tempDir, outFileName);
