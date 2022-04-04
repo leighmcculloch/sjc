@@ -13,7 +13,9 @@ case "$sys" in
   *) echo "Unrecognized operating system or architecture: $sys"; exit 1 ;;
 esac
 
+mkdir -p "$installdir"
 curl -sSL -o "$installloc" "https://github.com/leighmcculloch/sjc/releases/download/$version/$bin"
+chmod +x "$installloc"
 
 echo "Installed to $installloc."
 echo "Add $installdir to your PATH."
