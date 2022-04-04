@@ -315,7 +315,14 @@ export function fromString(s: string, storage: Storage): bigint {
     case "unknown":
       return BigInt(value);
     case undefined:
-    default:
-      throw new Error(`unrecognized val ${type}:${value}`);
+    default: {
+      let b;
+      try {
+        b = BigInt(s);
+      } catch {
+        throw new Error(`unrecognized val ${s}`);
+      }
+      throw new Error(`unrecognized val ${s}, did you mean u63:${b}?`);
+    }
   }
 }
