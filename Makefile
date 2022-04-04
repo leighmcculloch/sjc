@@ -29,6 +29,8 @@ build/sjc-win.exe: src/*.json src/*.ts src/embed.json
 
 src/embed.json: examples/**/*
 	rm -f examples/**/storage.json
+	rm -fr examples/basic-rs/target
+	rm -fr examples/basic-rs/sdk/target
 	deno run \
 		--allow-read=examples \
 		--allow-write=src/embed.json \

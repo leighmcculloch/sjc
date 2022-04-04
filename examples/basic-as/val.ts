@@ -29,8 +29,9 @@ const objBinary: objectType = 6;
 // const objLedgerval: objectType = 8;
 // const objOperation: objectType = 9;
 // const objTransaction: objectType = 10;
-const objAccountId: objectType = 11;
-const objAsset: objectType = 12;
+// const objBignum: objectType = 11;
+const objAccountId: objectType = 12;
+const objAsset: objectType = 13;
 
 export function log(v: Val): void {
   host.log_value(v);
