@@ -1,5 +1,5 @@
-import * as val from "./val.ts";
-import * as host from "./host.ts";
+import * as val from "./sdk/val.ts";
+import * as host from "./sdk/host.ts";
 
 const accountsFundedKey = val.fromU32(0x01);
 

@@ -41,6 +41,10 @@
       34,
       46,
       47,
+      115,
+      100,
+      107,
+      47,
       118,
       97,
       108,
@@ -74,6 +78,10 @@
       32,
       34,
       46,
+      47,
+      115,
+      100,
+      107,
       47,
       104,
       111,
@@ -3034,26 +3042,10 @@
       45,
       32,
       96,
-      118,
-      97,
-      108,
-      46,
-      116,
       115,
-      96,
-      32,
-      97,
-      110,
       100,
-      32,
-      96,
-      104,
-      111,
-      115,
-      116,
-      46,
-      116,
-      115,
+      107,
+      47,
       96,
       10,
       10,
@@ -3131,7 +3123,13 @@
       10
     ]
   },
-  "examples/basic-as/val.ts": {
+  "examples/basic-as/sdk": {
+    "name": "sdk",
+    "isDirectory": true,
+    "isFile": false,
+    "isSymlink": false
+  },
+  "examples/basic-as/sdk/val.ts": {
     "name": "val.ts",
     "isDirectory": false,
     "isFile": true,
@@ -6740,7 +6738,7 @@
       10
     ]
   },
-  "examples/basic-as/host.ts": {
+  "examples/basic-as/sdk/host.ts": {
     "name": "host.ts",
     "isDirectory": false,
     "isFile": true,

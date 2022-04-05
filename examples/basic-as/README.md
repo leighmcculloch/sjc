@@ -43,6 +43,6 @@ functions.
     sjc run contract.ts payment acc:G2 acc:G3 asset:USD:G1 u63:7
     ```
 
-- `val.ts` and `host.ts`
+- `sdk/`
 
   Contain utility functions for types and calling into the host system.
