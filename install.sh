@@ -1,9 +1,8 @@
 #!/bin/sh
 
-
 installdir="${SJC_INSTALL:-$HOME/.bin}"
 installloc="$installdir/sjc"
-version="0.2.2"
+version="${SJC_VERSION:-0.2.2}"
 sys="$(uname -sm)"
 bin=
 case "$sys" in
@@ -13,10 +12,10 @@ case "$sys" in
   *) echo "Unrecognized operating system or architecture: $sys"; exit 1 ;;
 esac
 
-echo "Installing sjc $version to $installdir..."
+echo "Installing sjc $version ($sys) to $installdir..."
 
 mkdir -p "$installdir"
-curl -SL -o "$installloc" "https://github.com/leighmcculloch/sjc/releases/download/$version/$bin"
+curl --progress-bar -SL -o "$installloc" "https://github.com/leighmcculloch/sjc/releases/download/$version/$bin"
 chmod +x "$installloc"
 
 echo "Installed to $installloc."
