@@ -1,6 +1,8 @@
 # sjc-cli
 
-CLI tool for prototyping contracts for [Stellar Jump Cannon].
+CLI tool for prototyping contracts in AssemblyScript and Rust for the [experimental WASM design] of [Stellar Jump Cannon].
+
+Note that this tool implements some aspect of the design using shortcuts, and so it may not be identical to the [experimental WASM design]. The CLI is intended for early experimentation.
 
 ## Install
 
@@ -68,6 +70,7 @@ types are supported:
 
 See `storage.json` for stored data.
 
+[experimental WASM design]: https://github.com/stellar/stellar-core/pull/3380
 [Stellar Jump Cannon]: https://stellar.org/blog/smart-contracts-on-stellar-why-now
 [Deno]: https://deno.land
 [Releases]: https://github.com/leighmcculloch/sjc/releases/latest
