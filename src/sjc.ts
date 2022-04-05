@@ -3,6 +3,7 @@ import { Embed } from "x/embed";
 import { cac } from "cac";
 import { run } from "./run.ts";
 import { build } from "./build.ts";
+import buildinfo from "./buildinfo.json" assert { type: "json" };
 
 import embedImported from "./embed.json" assert { type: "json" };
 const embed = Embed.fromImported(embedImported);
@@ -76,11 +77,17 @@ cli
     run(wasmFile, func, args, opts);
   });
 
+cli.globalCommand.versionNumber = buildinfo.version;
+cli
+  .command("version", "Display version number")
+  .action(() => {
+    cli.outputVersion();
+  });
+
 let helpShown = false;
 cli.help(() => {
   helpShown = true;
 });
-cli.version("0.2.2");
 
 try {
   cli.parse();

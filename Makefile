@@ -1,4 +1,7 @@
-.PHONY: clean build run-example-as run-example-rs
+.PHONY: clean build run run-example-as run-example-rs
+
+run: build
+	build/sjc version
 
 run-example-as: build
 	cd examples/basic-as \
