@@ -51,5 +51,7 @@ export declare function map_keys(m: Val): Val;
 export declare function create_account(srcAcc: Val, dstAcc: Val, startingBalance: Val): Val;
 @external("env", "host__create_trustline")
 export declare function create_trustline(srcAcc: Val, asset: Val): Val;
+@external("env", "host__get_balance")
+export declare function get_balance(acc: Val, asset: Val): Val;
 @external("env", "host__pay")
 export declare function pay(src: Val, dst: Val, asset: Val, amount: Val): Val;

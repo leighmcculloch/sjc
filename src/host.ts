@@ -270,7 +270,36 @@ export class Host {
         return val.fromVoid();
       },
 
-      host__pay: (srcAccId: Val, dstAccId: Val, asset: Val, amountVal: Val): Val => {
+      host__get_balance: (accId: Val, asset: Val): Val => {
+        if (!val.isObjectType(accId, val.objectTypeAccountId)) {
+          return val.fromStatus(0n);
+        }
+        if (
+          !val.isNativeAsset(asset) &&
+          !val.isObjectType(asset, val.objectTypeAsset)
+        ) {
+          return val.fromStatus(1n);
+        }
+        const acc = this.storage.getAccount(accId);
+        if (!acc) {
+          return val.fromStatus(2n);
+        }
+        if (val.isNativeAsset(asset)) {
+          return val.fromU63(acc.nativeBalance);
+        } else {
+          if (!acc.trustlineBalances.has(asset)) {
+            return val.fromStatus(3n);
+          }
+          return val.fromU63(acc.trustlineBalances.get(asset) as bigint);
+        }
+      },
+
+      host__pay: (
+        srcAccId: Val,
+        dstAccId: Val,
+        asset: Val,
+        amountVal: Val,
+      ): Val => {
         if (!val.isObjectType(srcAccId, val.objectTypeAccountId)) {
           return val.fromStatus(0n);
         }

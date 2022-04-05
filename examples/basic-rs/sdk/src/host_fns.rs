@@ -34,6 +34,7 @@ extern "C" {
 
     pub(crate) fn host__create_account(src: Val, dst: Val, startingBalance: Val) -> Val;
     pub(crate) fn host__create_trustline(src: Val, asset: Val) -> Val;
+    pub(crate) fn host__get_balance(acc: Val, asset: Val) -> Val;
     pub(crate) fn host__pay(src: Val, dst: Val, asset: Val, amount: Val) -> Val;
 
     pub(crate) fn host__call0(contract: Val, func: Val) -> Val;

@@ -59,6 +59,11 @@ pub fn create_trustline(src: Val, asset: Val) -> Val {
 }
 
 #[inline(always)]
+pub fn balance(acc: Val, asset: Val) -> Val {
+    unsafe { host_fns::host__get_balance(acc, asset) }
+}
+
+#[inline(always)]
 pub fn pay(src: Val, dst: Val, asset: Val, amount: Val) -> Val {
     unsafe { host_fns::host__pay(src, dst, asset, amount) }
 }

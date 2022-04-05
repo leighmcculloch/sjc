@@ -47,3 +47,8 @@ export function payment(
 ): val.Val {
   return host.pay(srcAccId, dstAccId, asset, amount);
 }
+
+// Get balance gets the balance of an account.
+export function balance(accId: val.Val, asset: val.Val): val.Val {
+  return host.get_balance(accId, asset);
+}

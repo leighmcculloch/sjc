@@ -52,3 +52,9 @@ pub fn trust_asset(acc: Val, asset: Val) -> Val {
 pub fn payment(src_acc_id: Val, dst_acc_id: Val, asset: Val, amount: Val) -> Val {
     sdk::pay(src_acc_id, dst_acc_id, asset, amount)
 }
+
+// Get the balance of the account.
+#[no_mangle]
+pub fn balance(acc_id: Val, asset: Val) -> Val {
+    sdk::balance(acc_id, asset)
+}

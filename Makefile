@@ -1,14 +1,38 @@
-.PHONY: clean build run-example
+.PHONY: clean build run-example-as run-example-rs
 
-run-example: build
+run-example-as: build
 	cd examples/basic-as \
-		&& ../../build/sjc run -v contract.ts init \
-		&& ../../build/sjc run -v contract.ts fund acc:G1 \
-		&& ../../build/sjc run -v contract.ts fund acc:G2 \
-		&& ../../build/sjc run -v contract.ts trust_asset acc:G1 asset:USD:G2 \
-		&& ../../build/sjc run -v contract.ts payment acc:G2 acc:G1 asset:USD:G2 u63:100 \
-		&& ../../build/sjc run -v contract.ts was_created_by_fund acc:G3 \
-		&& ../../build/sjc run -v contract.ts was_created_by_fund acc:G2
+		&& ../../build/sjc run contract.ts init \
+		&& ../../build/sjc run contract.ts fund acc:G1 \
+		&& ../../build/sjc run contract.ts fund acc:G2 \
+		&& ../../build/sjc run contract.ts was_created_by_fund acc:G1 \
+		&& ../../build/sjc run contract.ts was_created_by_fund acc:G2 \
+		&& ../../build/sjc run contract.ts was_created_by_fund acc:G3 \
+		&& ../../build/sjc run contract.ts trust_asset acc:G1 asset:USD:G2 \
+		&& ../../build/sjc run contract.ts payment acc:G2 acc:G1 asset:USD:G2 u63:100 \
+		&& ../../build/sjc run contract.ts balance acc:G1 native \
+		&& ../../build/sjc run contract.ts balance acc:G1 asset:USD:G2 \
+		&& ../../build/sjc run contract.ts balance acc:G2 native \
+		&& ../../build/sjc run contract.ts balance acc:G2 asset:USD:G2 \
+		&& true
+
+run-example-rs: build
+	cd examples/basic-rs && \
+		cargo build --target wasm32-unknown-unknown --release
+	cd examples/basic-rs \
+		&& ../../build/sjc run target/wasm32-unknown-unknown/release/basic_rs.wasm init \
+		&& ../../build/sjc run target/wasm32-unknown-unknown/release/basic_rs.wasm fund acc:G1 \
+		&& ../../build/sjc run target/wasm32-unknown-unknown/release/basic_rs.wasm fund acc:G2 \
+		&& ../../build/sjc run target/wasm32-unknown-unknown/release/basic_rs.wasm was_created_by_fund acc:G1 \
+		&& ../../build/sjc run target/wasm32-unknown-unknown/release/basic_rs.wasm was_created_by_fund acc:G2 \
+		&& ../../build/sjc run target/wasm32-unknown-unknown/release/basic_rs.wasm was_created_by_fund acc:G3 \
+		&& ../../build/sjc run target/wasm32-unknown-unknown/release/basic_rs.wasm trust_asset acc:G1 asset:USD:G2 \
+		&& ../../build/sjc run target/wasm32-unknown-unknown/release/basic_rs.wasm payment acc:G2 acc:G1 asset:USD:G2 u63:100 \
+		&& ../../build/sjc run target/wasm32-unknown-unknown/release/basic_rs.wasm balance acc:G1 native \
+		&& ../../build/sjc run target/wasm32-unknown-unknown/release/basic_rs.wasm balance acc:G1 asset:USD:G2 \
+		&& ../../build/sjc run target/wasm32-unknown-unknown/release/basic_rs.wasm balance acc:G2 native \
+		&& ../../build/sjc run target/wasm32-unknown-unknown/release/basic_rs.wasm balance acc:G2 asset:USD:G2 \
+		&& true
 
 clean:
 	rm -fr build
