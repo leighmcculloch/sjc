@@ -14,7 +14,7 @@ case "$sys" in
 esac
 
 mkdir -p "$installdir"
-curl -sSL -o "$installloc" "https://github.com/leighmcculloch/sjc/releases/download/$version/$bin"
+curl -SL -o "$installloc" "https://github.com/leighmcculloch/sjc/releases/download/$version/$bin"
 chmod +x "$installloc"
 
 echo "Installed to $installloc."
