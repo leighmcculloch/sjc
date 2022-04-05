@@ -13,6 +13,8 @@ case "$sys" in
   *) echo "Unrecognized operating system or architecture: $sys"; exit 1 ;;
 esac
 
+echo "Installing sjc $version to $installdir..."
+
 mkdir -p "$installdir"
 curl -SL -o "$installloc" "https://github.com/leighmcculloch/sjc/releases/download/$version/$bin"
 chmod +x "$installloc"
