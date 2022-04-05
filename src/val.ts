@@ -275,7 +275,7 @@ export function toString(v: Val, storage: Storage): string {
     }
     return `obj:${toObjectType(v)}:${toObjectId(v)}`;
   }
-  return `unknown:${v}`;
+  return `val:${v}`;
 }
 
 export function fromString(s: string, storage: Storage): bigint {
@@ -312,7 +312,7 @@ export function fromString(s: string, storage: Storage): bigint {
     }
     case "status":
       return fromStatus(BigInt(value));
-    case "unknown":
+    case "val":
       return BigInt(value);
     case undefined:
     default: {
