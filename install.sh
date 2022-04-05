@@ -2,7 +2,7 @@
 
 installdir="${SJC_INSTALL:-$HOME/.bin}"
 installloc="$installdir/sjc"
-version="${SJC_VERSION:-0.2.2}"
+version="${SJC_VERSION:-0.4.0}"
 sys="$(uname -sm)"
 bin=
 case "$sys" in
