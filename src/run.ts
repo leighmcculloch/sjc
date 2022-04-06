@@ -38,10 +38,7 @@ export async function run(
   }
   const file = await readFile(wasmFile);
 
-  const h = new Host(storage);
-  const importObj = { env: h.funcs() };
   const wasmModule = new WebAssembly.Module(file);
-  const wasmInstance = new WebAssembly.Instance(wasmModule, importObj);
   if (opts.verbose) {
     const imports = WebAssembly.Module.imports(wasmModule);
     console.error(
@@ -54,6 +51,10 @@ export async function run(
       exports.filter((e) => e.kind == "function").map((e) => e.name),
     );
   }
+
+  const h = new Host(storage);
+  const importObj = { env: h.funcs() };
+  const wasmInstance = new WebAssembly.Instance(wasmModule, importObj);
 
   if (opts.verbose) {
     console.error("Invoke Func:", funcName);
