@@ -88,11 +88,10 @@ export async function run(
       console.error("Return:", []);
     }
   } else {
-    const v = val.toString(retVal, storage);
     if (opts.verbose) {
-      console.error("Return:", [v]);
+      console.error("Return:", [val.toString(retVal, storage)]);
     }
-    console.log(v);
+    console.log(val.toString(retVal, storage, true));
   }
   await writeTextFile(opts.storage, JSON.stringify(h.storage, null, 2));
 }

@@ -1,5 +1,7 @@
 export interface Storage {
   newObjectVal(o: ObjectType): Val;
+  getVec(v: Val): bigint[] | undefined;
+  getMap(v: Val): Map<bigint, bigint> | undefined;
   getAccountId(v: Val): string | undefined;
   getValFromAccountId(s: string): Val;
   getAssetCode(v: Val): string | undefined;
@@ -237,7 +239,11 @@ export function fromStatus(s: bigint): Val {
 
 //#endregion Status
 
-export function toString(v: Val, storage: Storage): string {
+export function toString(
+  v: Val,
+  storage: Storage,
+  expand: boolean = false,
+): string {
   if (isU63(v)) {
     return `u63:${toU63(v)}`;
   }
@@ -260,6 +266,12 @@ export function toString(v: Val, storage: Storage): string {
     return `status:${toStatus(v)}`;
   }
   if (isObject(v)) {
+    if (isObjectType(v, objectTypeVec) && expand) {
+      const vec = storage.getVec(v);
+      if (vec != undefined) {
+        return `vec:[${vec.map((e) => toString(e, storage, expand))}]`;
+      }
+    }
     if (isObjectType(v, objectTypeAccountId)) {
       const accId = storage.getAccountId(v);
       if (accId != undefined) {
