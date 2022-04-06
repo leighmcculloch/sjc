@@ -3,39 +3,11 @@
 run: build
 	build/sjc version
 
-run-example-as: build
-	cd examples/basic-as \
-		&& ../../build/sjc run contract.ts init \
-		&& ../../build/sjc run contract.ts fund acc:G1 \
-		&& ../../build/sjc run contract.ts fund acc:G2 \
-		&& ../../build/sjc run contract.ts was_created_by_fund acc:G1 \
-		&& ../../build/sjc run contract.ts was_created_by_fund acc:G2 \
-		&& ../../build/sjc run contract.ts was_created_by_fund acc:G3 \
-		&& ../../build/sjc run contract.ts trust_asset acc:G1 asset:USD:G2 \
-		&& ../../build/sjc run contract.ts payment acc:G2 acc:G1 asset:USD:G2 u63:100 \
-		&& ../../build/sjc run contract.ts balance acc:G1 native \
-		&& ../../build/sjc run contract.ts balance acc:G1 asset:USD:G2 \
-		&& ../../build/sjc run contract.ts balance acc:G2 native \
-		&& ../../build/sjc run contract.ts balance acc:G2 asset:USD:G2 \
-		&& true
+run-as: build
+	$(MAKE) -C examples/basic-as SJC=$(PWD)/build/sjc
 
-run-example-rs: build
-	cd examples/basic-rs && \
-		cargo build --target wasm32-unknown-unknown --release
-	cd examples/basic-rs \
-		&& ../../build/sjc run target/wasm32-unknown-unknown/release/basic_rs.wasm init \
-		&& ../../build/sjc run target/wasm32-unknown-unknown/release/basic_rs.wasm fund acc:G1 \
-		&& ../../build/sjc run target/wasm32-unknown-unknown/release/basic_rs.wasm fund acc:G2 \
-		&& ../../build/sjc run target/wasm32-unknown-unknown/release/basic_rs.wasm was_created_by_fund acc:G1 \
-		&& ../../build/sjc run target/wasm32-unknown-unknown/release/basic_rs.wasm was_created_by_fund acc:G2 \
-		&& ../../build/sjc run target/wasm32-unknown-unknown/release/basic_rs.wasm was_created_by_fund acc:G3 \
-		&& ../../build/sjc run target/wasm32-unknown-unknown/release/basic_rs.wasm trust_asset acc:G1 asset:USD:G2 \
-		&& ../../build/sjc run target/wasm32-unknown-unknown/release/basic_rs.wasm payment acc:G2 acc:G1 asset:USD:G2 u63:100 \
-		&& ../../build/sjc run target/wasm32-unknown-unknown/release/basic_rs.wasm balance acc:G1 native \
-		&& ../../build/sjc run target/wasm32-unknown-unknown/release/basic_rs.wasm balance acc:G1 asset:USD:G2 \
-		&& ../../build/sjc run target/wasm32-unknown-unknown/release/basic_rs.wasm balance acc:G2 native \
-		&& ../../build/sjc run target/wasm32-unknown-unknown/release/basic_rs.wasm balance acc:G2 asset:USD:G2 \
-		&& true
+run-rs: build
+	$(MAKE) -C examples/basic-rs SJC=$(PWD)/build/sjc
 
 clean:
 	rm -fr build

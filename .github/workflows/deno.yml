@@ -12,9 +12,9 @@ jobs:
     - uses: denoland/setup-deno@v1
       with:
         deno-version: v1.x
-    - run: make build
+    - run: make build run
 
-  test:
+  test-as:
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -22,7 +22,17 @@ jobs:
     - uses: denoland/setup-deno@v1
       with:
         deno-version: v1.x
-    - run: make
+    - run: make run-as
+
+  test-rs:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: denoland/setup-deno@v1
+      with:
+        deno-version: v1.x
+    - run: make run-as
 
 
 
