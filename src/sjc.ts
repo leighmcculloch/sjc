@@ -2,6 +2,7 @@ import * as path from "std/path";
 import { Embed } from "x/embed";
 import { cac } from "cac";
 import { run } from "./run.ts";
+import { inspect } from "./inspect.ts";
 import { build } from "./build.ts";
 import buildinfo from "./buildinfo.json" assert { type: "json" };
 
@@ -49,6 +50,32 @@ cli
 
 cli
   .command(
+    "inspect <contract.ts/wasm>",
+    "Inspect a wasm file",
+  )
+  .example((name) => `${name} inspect contract.ts`)
+  .example((name) => `${name} inspect contract.wasm`)
+  .action(async (file, opts) => {
+    let wasmFile = file;
+    const fileExt = path.extname(file);
+    if (fileExt == ".ts") {
+      const fullFileName = path.basename(file);
+      const fileName = fullFileName.slice(0, fullFileName.length - fileExt.length);
+      const outFileName = `${fileName}.wasm`;
+      const tempDir = await Deno.makeTempDir();
+      wasmFile = path.join(tempDir, outFileName);
+      const buildSuccess = await build(file, wasmFile, {
+        verbose: opts.verbose,
+      });
+      if (!buildSuccess) {
+        Deno.exit(1);
+      }
+    }
+    inspect(wasmFile);
+  });
+
+cli
+  .command(
     "run <contract.ts/wasm> <func> [...args]",
     "Run a func in a wasm file",
   )
@@ -73,6 +100,9 @@ cli
       if (!buildSuccess) {
         Deno.exit(1);
       }
+    }
+    if (opts.verbose) {
+      inspect(wasmFile);
     }
     run(wasmFile, func, args, opts);
   });

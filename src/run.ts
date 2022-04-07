@@ -32,26 +32,9 @@ export async function run(
     console.error("Storage:", opts.storage);
   }
 
-  const fileStat = await stat(wasmFile);
-  if (opts.verbose) {
-    console.error("Wasm File:", wasmFile, `(${fileStat.size}B)`);
-  }
   const file = await readFile(wasmFile);
 
   const wasmModule = new WebAssembly.Module(file);
-  if (opts.verbose) {
-    const imports = WebAssembly.Module.imports(wasmModule);
-    console.error(
-      "Dependencies:",
-      imports.sort((a, b) => a.name > b.name ? 1 : -1),
-    );
-    const exports = WebAssembly.Module.exports(wasmModule);
-    console.error(
-      "Functions:",
-      exports.filter((e) => e.kind == "function").map((e) => e.name),
-    );
-  }
-
   const h = new Host(storage);
   const importObj = { env: h.funcs() };
   const wasmInstance = new WebAssembly.Instance(wasmModule, importObj);
