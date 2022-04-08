@@ -1,66 +1,196 @@
-use super::Val;
+use super::{Object, Val};
+
+// Most host functions have strong contractual guarantees from the host: they
+// will either return the correctly-typed objects here, or they will trap. So we
+// do not need to check return types, and we can even unsafely downcast Vals to
+// specific subtypes if we know them.
+//
+// (Recall that there must be no way for the guest to corrupt the host even if
+// the guest does receive unexpected objects -- at worst the host can corrupt or
+// confuse the guest this way, but the guest can never defend itself against a
+// malicious host anyways.)
+//
+// We do this mostly to minimize codesize, and also reduce the chance of users
+// missing an error in a contract binding to another language that doesn't have
+// Result<> types. Every error that can trap this way typically has a way to
+// avoid it by checking some value first (eg. check a map to see if it contains
+// a value before getting it).
+//
+// The exceptions are ledger-interaction calls and especially cross-contract
+// calls: these we project into a Result<> because they are fairly failure-prone
+// and impossible to guard against failure of, typically. We assume users might
+// wish to contain these and, in general, that users won't be doing a _ton_ of
+// them so it's ok that they are a little more expensive code-size-wise.
+
+// General context-access functions live in the 'x' module.
+#[link(wasm_import_module = "x")]
 extern "C" {
-    pub(crate) fn host__log_value(v: Val) -> Val;
-    pub(crate) fn host__store_set(k: Val, v: Val);
-    pub(crate) fn host__store_get(v: Val) -> Val;
 
-    pub(crate) fn host__map_new() -> Val;
-    pub(crate) fn host__map_put(m: Val, k: Val, v: Val) -> Val;
-    pub(crate) fn host__map_get(m: Val, k: Val) -> Val;
-    pub(crate) fn host__map_del(m: Val, k: Val) -> Val;
-    pub(crate) fn host__map_len(m: Val) -> Val;
-    pub(crate) fn host__map_keys(m: Val) -> Val;
+    // link names are chosen to be (a) unrepresentable as rust identifiers so
+    // they cannot collide with exported user functions and (b) very short, so
+    // they do not take up a lot of space in import tables. They consist of a $
+    // symbol followed by a single character category identifier and a single
+    // character function identifier, each drawn from the same 64-character
+    // repertoire as symbol: [_0-9A-Za-z], in that order. If we ever need more
+    // than 64 functions within a category we can just overflow to 2-character
+    // function identifiers; if we ever need more than 64 categories, we can
+    // pick a different prefix-char for the category-overflow space; both of
+    // these possibilities seem unlikely at present, but either way they're
+    // fairly straightforward.
+    #[link_name = "$_"]
+    pub(crate) fn log_value(v: Val) -> Val;
 
-    pub(crate) fn host__vec_new() -> Val;
-    pub(crate) fn host__vec_put(v: Val, i: Val, x: Val) -> Val;
-    pub(crate) fn host__vec_get(v: Val, i: Val) -> Val;
-    pub(crate) fn host__vec_del(v: Val, i: Val) -> Val;
-    pub(crate) fn host__vec_len(v: Val) -> Val;
+    // Fetches an OpResult object for inspection, in the rare case the user
+    // wants more detail than is conveyed in a simple Status.
+    #[link_name = "$0"]
+    pub(crate) fn get_last_operation_result() -> Object;
+}
 
-    pub(crate) fn host__vec_push(v: Val, x: Val) -> Val;
-    pub(crate) fn host__vec_pop(v: Val) -> Val;
-    pub(crate) fn host__vec_take(v: Val, n: Val) -> Val;
-    pub(crate) fn host__vec_drop(v: Val, n: Val) -> Val;
-    pub(crate) fn host__vec_front(v: Val) -> Val;
-    pub(crate) fn host__vec_back(v: Val) -> Val;
-    pub(crate) fn host__vec_insert(v: Val, i: Val, x: Val) -> Val;
-    pub(crate) fn host__vec_append(v1: Val, v2: Val) -> Val;
+// Map functions live in the 'm' module
+#[link(wasm_import_module = "m")]
+extern "C" {
+    #[link_name = "$_"]
+    pub(crate) fn map_new() -> Object;
+    #[link_name = "$0"]
+    pub(crate) fn map_put(m: Object, k: Val, v: Val) -> Object;
+    #[link_name = "$1"]
+    pub(crate) fn map_get(m: Object, k: Val) -> Val;
+    #[link_name = "$2"]
+    pub(crate) fn map_del(m: Object, k: Val) -> Object;
+    #[link_name = "$3"]
+    pub(crate) fn map_len(m: Object) -> Val;
+    #[link_name = "$4"]
+    pub(crate) fn map_keys(m: Object) -> Object;
+    #[link_name = "$5"]
+    pub(crate) fn map_has(m: Object, k: Val) -> Val;
+}
 
-    pub(crate) fn host__get_current_ledger_num() -> Val;
+// Vec functions live in the 'v' module
+#[link(wasm_import_module = "v")]
+extern "C" {
+    #[link_name = "$_"]
+    pub(crate) fn vec_new() -> Object;
+    #[link_name = "$0"]
+    pub(crate) fn vec_put(v: Object, i: Val, x: Val) -> Object;
+    #[link_name = "$1"]
+    pub(crate) fn vec_get(v: Object, i: Val) -> Val;
+    #[link_name = "$2"]
+    pub(crate) fn vec_del(v: Object, i: Val) -> Object;
+    #[link_name = "$3"]
+    pub(crate) fn vec_len(v: Object) -> Val;
+
+    #[link_name = "$4"]
+    pub(crate) fn vec_push(v: Object, x: Val) -> Object;
+    #[link_name = "$5"]
+    pub(crate) fn vec_pop(v: Object) -> Object;
+    #[link_name = "$6"]
+    pub(crate) fn vec_take(v: Object, n: Val) -> Object;
+    #[link_name = "$7"]
+    pub(crate) fn vec_drop(v: Object, n: Val) -> Object;
+    #[link_name = "$8"]
+    pub(crate) fn vec_front(v: Object) -> Val;
+    #[link_name = "$9"]
+    pub(crate) fn vec_back(v: Object) -> Val;
+    #[link_name = "$A"]
+    pub(crate) fn vec_insert(v: Object, i: Val, x: Val) -> Object;
+    #[link_name = "$B"]
+    pub(crate) fn vec_append(v1: Object, v2: Object) -> Object;
+}
+
+// Ledger functions live in the 'l' module
+#[link(wasm_import_module = "l")]
+extern "C" {
+    #[link_name = "$_"]
+    pub(crate) fn get_current_ledger_num() -> Val;
 
     // NB: this returns a raw/unboxed u64, not a Val union.
-    pub(crate) fn host__get_current_ledger_close_time() -> u64;
+    #[link_name = "$0"]
+    pub(crate) fn get_current_ledger_close_time() -> u64;
 
+    // NB: returns a Status; details can be fetched with
+    // get_last_operation_result.
+    #[link_name = "$1"]
+    pub(crate) fn pay(src: Val, dst: Val, asset: Val, amount: Val) -> Val;
 
-    pub(crate) fn host__create_account(src: Val, dst: Val, startingBalance: Val) -> Val;
-    pub(crate) fn host__create_trustline(src: Val, asset: Val) -> Val;
-    pub(crate) fn host__get_balance(acc: Val, asset: Val) -> Val;
-    pub(crate) fn host__pay(src: Val, dst: Val, asset: Val, amount: Val) -> Val;
+    #[link_name = "$2"]
+    pub(crate) fn put_contract_data(key: Val, val: Val) -> Val;
+    #[link_name = "$3"]
+    pub(crate) fn has_contract_data(key: Val) -> Val;
+    #[link_name = "$4"]
+    pub(crate) fn get_contract_data(key: Val) -> Val;
+    #[link_name = "$5"]
+    pub(crate) fn del_contract_data(key: Val) -> Val;
 
-    pub(crate) fn host__call0(contract: Val, func: Val) -> Val;
-    pub(crate) fn host__call1(contract: Val, func: Val, a: Val) -> Val;
-    pub(crate) fn host__call2(contract: Val, func: Val, a: Val, b: Val) -> Val;
-    pub(crate) fn host__call3(contract: Val, func: Val, a: Val, b: Val, c: Val) -> Val;
-    pub(crate) fn host__call4(contract: Val, func: Val, a: Val, b: Val, c: Val, d: Val) -> Val;
+    #[link_name = "$6"]
+    pub(crate) fn account_create(src_acc: Val, dst_acc: Val, starting_balance: Val) -> Val;
+    #[link_name = "$7"]
+    pub(crate) fn account_create_trustline(acc: Val, asset: Val) -> Val;
+    #[link_name = "$8"]
+    pub(crate) fn account_get_balance(acc: Val, asset: Val) -> Val;
+}
 
-    pub(crate) fn host__bignum_from_u64(x: u64) -> Val;
-    pub(crate) fn host__bignum_add(lhs: Val, rhs: Val) -> Val;
-    pub(crate) fn host__bignum_sub(lhs: Val, rhs: Val) -> Val;
-    pub(crate) fn host__bignum_mul(lhs: Val, rhs: Val) -> Val;
-    pub(crate) fn host__bignum_div(lhs: Val, rhs: Val) -> Val;
-    pub(crate) fn host__bignum_rem(lhs: Val, rhs: Val) -> Val;
-    pub(crate) fn host__bignum_and(lhs: Val, rhs: Val) -> Val;
-    pub(crate) fn host__bignum_or(lhs: Val, rhs: Val) -> Val;
-    pub(crate) fn host__bignum_xor(lhs: Val, rhs: Val) -> Val;
-    pub(crate) fn host__bignum_shl(lhs: Val, rhs: u64) -> Val;
-    pub(crate) fn host__bignum_shr(lhs: Val, rhs: u64) -> Val;
-    pub(crate) fn host__bignum_cmp(lhs: Val, rhs: Val) -> Val;
-    pub(crate) fn host__bignum_is_zero(x: Val) -> Val;
-    pub(crate) fn host__bignum_neg(x: Val) -> Val;
-    pub(crate) fn host__bignum_not(x: Val) -> Val;
-    pub(crate) fn host__bignum_gcd(lhs: Val, rhs: Val) -> Val;
-    pub(crate) fn host__bignum_lcm(lhs: Val, rhs: Val) -> Val;
-    pub(crate) fn host__bignum_pow(lhs: Val, rhs: u64) -> Val;
-    pub(crate) fn host__bignum_pow_mod(p: Val, q: Val, m: Val) -> Val;
-    pub(crate) fn host__bignum_sqrt(x: Val) -> Val;
+// Cross-contract functions live in the 'c' module
+#[link(wasm_import_module = "c")]
+extern "C" {
+    // NB: returns callee-return-value-or-Status; details can be fetched with
+    // get_last_operation_result.
+    //
+    // TODO: possibly revisit this since it adds ambiguity to whether callee
+    // successfully returned a status, or call failed and failure _generated_ a
+    // status. Possibly this distinction is too fussy to disambiguate.
+    #[link_name = "$_"]
+    pub(crate) fn call0(contract: Val, func: Val) -> Val;
+    #[link_name = "$0"]
+    pub(crate) fn call1(contract: Val, func: Val, a: Val) -> Val;
+    #[link_name = "$1"]
+    pub(crate) fn call2(contract: Val, func: Val, a: Val, b: Val) -> Val;
+    #[link_name = "$2"]
+    pub(crate) fn call3(contract: Val, func: Val, a: Val, b: Val, c: Val) -> Val;
+    #[link_name = "$3"]
+    pub(crate) fn call4(contract: Val, func: Val, a: Val, b: Val, c: Val, d: Val) -> Val;
+}
+
+// BigNum functions live in the 'b' module
+#[link(wasm_import_module = "b")]
+extern "C" {
+    #[link_name = "$_"]
+    pub(crate) fn bignum_from_u64(x: u64) -> Object;
+    #[link_name = "$0"]
+    pub(crate) fn bignum_add(lhs: Object, rhs: Object) -> Object;
+    #[link_name = "$1"]
+    pub(crate) fn bignum_sub(lhs: Object, rhs: Object) -> Object;
+    #[link_name = "$2"]
+    pub(crate) fn bignum_mul(lhs: Object, rhs: Object) -> Object;
+    #[link_name = "$3"]
+    pub(crate) fn bignum_div(lhs: Object, rhs: Object) -> Object;
+    #[link_name = "$4"]
+    pub(crate) fn bignum_rem(lhs: Object, rhs: Object) -> Object;
+    #[link_name = "$5"]
+    pub(crate) fn bignum_and(lhs: Object, rhs: Object) -> Object;
+    #[link_name = "$6"]
+    pub(crate) fn bignum_or(lhs: Object, rhs: Object) -> Object;
+    #[link_name = "$7"]
+    pub(crate) fn bignum_xor(lhs: Object, rhs: Object) -> Object;
+    #[link_name = "$8"]
+    pub(crate) fn bignum_shl(lhs: Object, rhs: u64) -> Object;
+    #[link_name = "$9"]
+    pub(crate) fn bignum_shr(lhs: Object, rhs: u64) -> Object;
+    #[link_name = "$A"]
+    pub(crate) fn bignum_cmp(lhs: Object, rhs: Object) -> Val;
+    #[link_name = "$B"]
+    pub(crate) fn bignum_is_zero(x: Object) -> Val;
+    #[link_name = "$C"]
+    pub(crate) fn bignum_neg(x: Object) -> Object;
+    #[link_name = "$D"]
+    pub(crate) fn bignum_not(x: Object) -> Object;
+    #[link_name = "$E"]
+    pub(crate) fn bignum_gcd(lhs: Object, rhs: Object) -> Object;
+    #[link_name = "$F"]
+    pub(crate) fn bignum_lcm(lhs: Object, rhs: Object) -> Object;
+    #[link_name = "$G"]
+    pub(crate) fn bignum_pow(lhs: Object, rhs: u64) -> Object;
+    #[link_name = "$H"]
+    pub(crate) fn bignum_pow_mod(p: Object, q: Object, m: Object) -> Object;
+    #[link_name = "$I"]
+    pub(crate) fn bignum_sqrt(x: Object) -> Object;
 }
